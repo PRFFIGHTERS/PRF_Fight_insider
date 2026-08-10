@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Promising Russian Fighters</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --red: #D91C1C;
+    --grey: #888;
+    --dark: #111111;
+    --card-bg: #1a1a1a;
+  }
+  body { font-family: 'Inter', sans-serif; background: var(--dark); color: #fff; min-height: 100vh; }
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(17,17,17,0.97); backdrop-filter: blur(10px);
+    border-bottom: 2px solid var(--red);
+    padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 68px;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { font-size: 26px; }
+  .logo-text { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: clamp(13px,2.5vw,17px); letter-spacing: 0.07em; text-transform: uppercase; line-height: 1.2; }
+  .logo-text span { color: var(--red); }
+  nav { display: flex; gap: 28px; }
+  nav a { font-family: 'Oswald', sans-serif; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--grey); text-decoration: none; transition: color 0.2s; }
+  nav a:hover { color: #fff; }
+
+  .hero { position: relative; padding: 72px 24px 56px; text-align: center; overflow: hidden; }
+  .hero::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(217,28,28,0.15) 0%, transparent 70%); pointer-events:none; }
+  .hero-eyebrow { font-family:'Oswald',sans-serif; font-size:11px; letter-spacing:0.25em; text-transform:uppercase; color:var(--red); margin-bottom:16px; }
+  .hero-title { font-family:'Oswald',sans-serif; font-weight:700; font-size:clamp(36px,7vw,72px); text-transform:uppercase; letter-spacing:0.04em; line-height:0.95; margin-bottom:20px; }
+  .hero-title em { font-style:normal; color:var(--red); }
+  .hero-sub { font-size:15px; color:var(--grey); max-width:480px; margin:0 auto 40px; line-height:1.6; font-weight:300; }
+
+  .search-wrap { max-width:480px; margin:0 auto; position:relative; }
+  .search-wrap input {
+    width:100%; padding:14px 20px 14px 50px;
+    background:rgba(255,255,255,0.06); border:1.5px solid rgba(255,255,255,0.12);
+    border-radius:4px; color:#fff; font-family:'Inter',sans-serif; font-size:15px; outline:none;
+    transition:border-color 0.2s, background 0.2s;
+  }
+  .search-wrap input::placeholder { color:rgba(255,255,255,0.3); }
+  .search-wrap input:focus { border-color:var(--red); background:rgba(217,28,28,0.06); }
+  .search-icon { position:absolute; left:16px; top:50%; transform:translateY(-50%); color:var(--grey); pointer-events:none; }
+
+  .section-label { display:flex; align-items:center; gap:14px; max-width:1100px; margin:60px auto 32px; padding:0 24px; }
+  .section-label span { font-family:'Oswald',sans-serif; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--grey); }
+  .section-label::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.08); }
+
+  .fighters-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:28px; max-width:1100px; margin:0 auto; padding:0 24px 80px; }
+
+  .fighter-card {
+    background:var(--card-bg); border-radius:6px; overflow:hidden;
+    border:1px solid rgba(255,255,255,0.07);
+    transition:transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+  }
+  .fighter-card:hover { transform:translateY(-6px); box-shadow:0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px var(--red); border-color:var(--red); }
+
+  .card-photo { position:relative; width:100%; aspect-ratio:3/4; overflow:hidden; background:#000; }
+  .card-photo img { width:100%; height:100%; object-fit:cover; object-position:top center; transition:transform 0.5s; }
+  .fighter-card:hover .card-photo img { transform:scale(1.04); }
+  .card-photo-overlay { position:absolute; bottom:0; left:0; right:0; height:50%; background:linear-gradient(to top, var(--card-bg) 0%, transparent 100%); }
+  .card-sport-tag { position:absolute; top:14px; right:14px; background:var(--red); color:#fff; font-family:'Oswald',sans-serif; font-size:10px; letter-spacing:0.18em; text-transform:uppercase; padding:4px 10px; border-radius:2px; }
+
+  .card-body { padding:20px 24px 28px; }
+  .card-name { font-family:'Oswald',sans-serif; font-weight:700; font-size:26px; letter-spacing:0.03em; text-transform:uppercase; line-height:1.05; margin-bottom:14px; }
+  .card-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:18px; }
+  .stat-block { background:rgba(255,255,255,0.04); border-radius:4px; padding:10px 8px; text-align:center; border:1px solid rgba(255,255,255,0.06); }
+  .stat-value { font-family:'Oswald',sans-serif; font-size:18px; font-weight:600; color:var(--red); line-height:1; }
+  .stat-label { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--grey); margin-top:4px; }
+  .card-divider { height:1px; background:rgba(255,255,255,0.07); margin:18px 0; }
+  .card-desc { font-size:13.5px; line-height:1.7; color:rgba(255,255,255,0.62); font-weight:300; }
+
+  .card-insta {
+    display:inline-flex; align-items:center; gap:10px; margin-top:18px;
+    background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);
+    border-radius:6px; padding:12px 20px; text-decoration:none;
+    font-family:'Inter',sans-serif; font-size:14px; font-weight:600; color:#fff;
+    transition:opacity 0.2s;
+  }
+  .card-insta:hover { opacity:0.85; }
+
+  .no-results { text-align:center; padding:80px 24px; color:var(--grey); font-family:'Oswald',sans-serif; font-size:20px; letter-spacing:0.1em; text-transform:uppercase; display:none; grid-column:1/-1; }
+
+  /* ===== About / Rules ===== */
+  .content-section { max-width:900px; margin:80px auto 0; padding:0 24px; }
+  .content-label { display:flex; align-items:center; gap:14px; margin-bottom:36px; }
+  .content-label span { font-family:'Oswald',sans-serif; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:#888; }
+  .content-label::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.08); }
+  .content-title { font-family:'Oswald',sans-serif; font-weight:700; font-size:clamp(32px,6vw,56px); text-transform:uppercase; letter-spacing:0.04em; line-height:1; margin-bottom:32px; }
+  .content-title em { font-style:normal; color:var(--red); }
+  .content-text { font-size:15px; line-height:1.8; color:rgba(255,255,255,0.7); font-weight:300; }
+
+  .rules-box { background:#1a1a1a; border:1px solid rgba(217,28,28,0.3); border-left:3px solid #D91C1C; border-radius:6px; padding:28px 32px; }
+  .rules-box h3 { font-family:'Oswald',sans-serif; font-size:16px; letter-spacing:0.15em; text-transform:uppercase; color:#D91C1C; margin-bottom:20px; }
+  .rules-box ul { list-style:none; display:grid; gap:12px; }
+  .rules-box li { display:flex; gap:12px; font-size:13.5px; line-height:1.6; color:rgba(255,255,255,0.65); font-weight:300; }
+  .rules-box li span { color:#D91C1C; flex-shrink:0; margin-top:2px; }
+
+  /* ===== Telegram contact ===== */
+  .tg-contact-wrap { text-align:center; padding: 28px 24px 8px; }
+  .tg-contact-link {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: #1a1a1a; border: 1.5px solid #229ED9;
+    border-radius: 6px; padding: 14px 28px;
+    font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 500;
+    color: #fff; text-decoration: none;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .tg-contact-link:hover { background:#1e2e38; box-shadow:0 0 0 1px #229ED9; }
+
+  /* ===== Apply CTA ===== */
+  .apply-cta-wrap { text-align:center; padding: 48px 24px 8px; }
+  .apply-cta-btn {
+    display:inline-flex; align-items:center; gap:12px;
+    background: var(--red); color:#fff; border:none; cursor:pointer;
+    font-family:'Oswald',sans-serif; font-size:17px; font-weight:700;
+    letter-spacing:0.1em; text-transform:uppercase;
+    padding:20px 48px; border-radius:6px;
+    box-shadow: 0 10px 30px rgba(217,28,28,0.35);
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  }
+  .apply-cta-btn:hover { transform:translateY(-3px); box-shadow:0 16px 40px rgba(217,28,28,0.5); background:#c11616; }
+  .apply-cta-btn:active { transform:translateY(0); }
+
+  /* ===== Application form ===== */
+  #apply-form { max-width:640px; margin:70px auto 0; padding:0 24px; scroll-margin-top:90px; }
+  .form-box {
+    background:var(--card-bg); border:1px solid rgba(217,28,28,0.35);
+    border-radius:8px; padding:40px clamp(20px,4vw,48px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  .form-title { font-family:'Oswald',sans-serif; font-weight:700; font-size:clamp(24px,4vw,34px); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px; }
+  .form-title em { font-style:normal; color:var(--red); }
+  .form-sub { font-size:13.5px; color:var(--grey); font-weight:300; margin-bottom:32px; line-height:1.6; }
+
+  .form-group { margin-bottom:22px; }
+  .form-group label {
+    display:block; font-family:'Oswald',sans-serif; font-size:11px;
+    letter-spacing:0.14em; text-transform:uppercase; color:#bbb; margin-bottom:10px;
+  }
+  .form-group input[type="text"],
+  .form-group input[type="number"],
+  .form-group textarea {
+    width:100%; background:rgba(255,255,255,0.05); border:1.5px solid rgba(255,255,255,0.12);
+    border-radius:5px; padding:13px 16px; color:#fff; font-family:'Inter',sans-serif;
+    font-size:15px; outline:none; transition:border-color 0.2s, background 0.2s;
+  }
+  .form-group input[type="text"]:focus,
+  .form-group input[type="number"]:focus,
+  .form-group textarea:focus { border-color:var(--red); background:rgba(217,28,28,0.06); }
+  .form-group textarea { resize:vertical; min-height:120px; font-family:'Inter',sans-serif; line-height:1.5; }
+
+  .file-drop {
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    background:rgba(255,255,255,0.05); border:1.5px dashed rgba(255,255,255,0.2);
+    border-radius:5px; padding:13px 16px; cursor:pointer; transition:border-color 0.2s, background 0.2s;
+  }
+  .file-drop:hover { border-color:var(--red); background:rgba(217,28,28,0.06); }
+  .file-drop span.fname { font-size:13px; color:var(--grey); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .file-drop input[type="file"] { display:none; }
+  .file-drop .browse-btn {
+    background:var(--red); color:#fff; font-family:'Oswald',sans-serif; font-size:11px;
+    letter-spacing:0.1em; text-transform:uppercase; padding:9px 16px; border-radius:4px;
+    flex-shrink:0;
+  }
+
+  #photoPreview { margin-top:14px; display:none; }
+  #photoPreview img { max-width:160px; max-height:160px; border-radius:6px; border:1px solid rgba(255,255,255,0.15); object-fit:cover; }
+
+  .form-submit-btn {
+    width:100%; background:var(--red); color:#fff; border:none; cursor:pointer;
+    font-family:'Oswald',sans-serif; font-size:15px; font-weight:700;
+    letter-spacing:0.12em; text-transform:uppercase;
+    padding:17px; border-radius:6px; margin-top:10px;
+    transition: background 0.2s, opacity 0.2s;
+  }
+  .form-submit-btn:hover:not(:disabled) { background:#c11616; }
+  .form-submit-btn:disabled { opacity:0.6; cursor:not-allowed; }
+
+  .form-status { margin-top:16px; font-size:13.5px; text-align:center; line-height:1.6; display:none; }
+  .form-status.success { display:block; color:#4CAF50; }
+  .form-status.error { display:block; color:#ff5c5c; }
+
+  footer { border-top:1px solid rgba(255,255,255,0.07); padding:24px; text-align:center; font-size:12px; color:rgba(255,255,255,0.2); letter-spacing:0.08em; margin-top:60px; }
+
+  @media (max-width:600px) {
+    header { padding:0 16px; }
+    nav { display:none; }
+    .hero { padding:48px 16px 40px; }
+    .fighters-grid { grid-template-columns:1fr; padding:0 16px 60px; gap:20px; }
+    .section-label { margin:40px auto 24px; padding:0 16px; }
+    .card-photo { aspect-ratio:4/5; }
+    .form-box { padding:32px 20px; }
+  }
+  @media (prefers-reduced-motion:reduce) {
+    .fighter-card, .card-photo img { transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🥊</div>
+    <div class="logo-text">Promising<br><span>Russian Fighters</span></div>
+  </div>
+  <nav>
+    <a href="#">Бойцы</a>
+    <a href="#">Рейтинг</a>
+    <a href="#">О нас</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <p class="hero-eyebrow">Элита российского спорта</p>
+  <h1 class="hero-title">Promising<br><em>Russian</em><br>Fighters</h1>
+  <p class="hero-sub">Перспективные российские бойцы — молодые спортсмены, которые определят будущее отечественного спорта.</p>
+  <div class="search-wrap">
+    <svg class="search-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="text" id="searchInput" placeholder="Поиск по имени или виду спорта…">
+  </div>
+</section>
+
+<div class="section-label"><span>Состав бойцов</span></div>
+
+<div class="fighters-grid" id="grid">
+
+  <div class="fighter-card" data-name="рудик расоян" data-sport="тхэквондо кикбоксинг">
+    <div class="card-photo">
+      <img src="https://placehold.co/480x640/1a1a1a/D91C1C?text=Рудик+Расоян" alt="Рудик Расоян">
+      <div class="card-photo-overlay"></div>
+      <span class="card-sport-tag">Тхэквондо / Кикбоксинг</span>
+    </div>
+    <div class="card-body">
+      <div class="card-name">Рудик<br>Расоян</div>
+      <div class="card-stats">
+        <div class="stat-block"><div class="stat-value">21</div><div class="stat-label">Лет</div></div>
+        <div class="stat-block"><div class="stat-value">174</div><div class="stat-label">Рост (см)</div></div>
+        <div class="stat-block"><div class="stat-value">65</div><div class="stat-label">Вес (кг)</div></div>
+      </div>
+      <div class="card-divider"></div>
+      <p class="card-desc">Молодой и перспективный российский тхэквондист из Краснодара. Мастер спорта России по тхэквондо, представляющий клуб «Академия чемпионов». Победитель Кубка России и Первенства России.<br><br>За карьеру провёл 71 поединок, одержав 50 побед. Отличается дисциплиной, волей к победе и постоянным стремлением к совершенствованию мастерства.</p>
+      <a href="https://www.instagram.com/rudik_rasoyan" target="_blank" class="card-insta">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+        </svg>
+        <span><strong>Instagram</strong> — @rudik_rasoyan</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="fighter-card" data-name="максим мамоян" data-sport="бокс">
+    <div class="card-photo">
+      <img src="https://placehold.co/480x640/1a1a1a/D91C1C?text=Максим+Мамоян" alt="Максим Мамоян">
+      <div class="card-photo-overlay"></div>
+      <span class="card-sport-tag">Бокс</span>
+    </div>
+    <div class="card-body">
+      <div class="card-name">Максим<br>Мамоян</div>
+      <div class="card-stats">
+        <div class="stat-block"><div class="stat-value">16</div><div class="stat-label">Лет</div></div>
+        <div class="stat-block"><div class="stat-value">182</div><div class="stat-label">Рост (см)</div></div>
+        <div class="stat-block"><div class="stat-value">58.2</div><div class="stat-label">Вес (кг)</div></div>
+      </div>
+      <div class="card-divider"></div>
+      <p class="card-desc">Боец 16 лет, кандидат в мастера спорта России по боксу. Выступает в весовой категории до 58,2 кг при росте 182 см, что даёт ему выраженное преимущество в длине рук и работе на дистанции.<br><br>Победитель первенства Южного федерального округа. Демонстрирует стабильную технику, хорошую скорость и грамотное чувство дистанции. Отличается дисциплиной в ринге и умением контролировать темп боя.</p>
+      <a href="https://www.instagram.com/mamoyan.maks" target="_blank" class="card-insta">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+        </svg>
+        <span><strong>Instagram</strong> — @mamoyan.maks</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="no-results" id="noResults">Бойцы не найдены</div>
+</div>
+
+
+<!-- ABOUT SECTION -->
+<section class="content-section">
+  <div class="content-label"><span>О нас</span></div>
+  <h2 class="content-title">О <em>нас</em></h2>
+  <div style="display:grid; gap:18px;">
+    <p class="content-text">
+      Мы специализируемся на создании эффективной платформы для поиска и продвижения бойцов различных дисциплин единоборств. Наша миссия — объединить талантливых спортсменов с профессиональными лигами, промоушенами, клубами, менеджерами и организаторами соревнований.
+    </p>
+    <p class="content-text">
+      На нашей платформе представлены профили бойцов с подробной информацией об их спортивном опыте, достижениях, весовых категориях и профессиональной карьере. Это позволяет организациям быстро находить подходящих спортсменов для турниров, а бойцам — получать новые возможности для развития и выступлений на более высоком уровне.
+    </p>
+    <p class="content-text">
+      Мы стремимся сделать процесс поиска и подбора бойцов максимально удобным, прозрачным и эффективным, помогая развивать индустрию единоборств и открывать новые перспективы для спортсменов по всему миру.
+    </p>
+  </div>
+</section>
+
+<!-- PHOTO RULES -->
+<section class="content-section">
+  <div class="content-label"><span>Правила</span></div>
+  <div class="rules-box">
+    <h3>📷 Правила использования фотографий</h3>
+    <ul>
+      <li><span>▸</span> Пользователям запрещается загружать, использовать или выдавать за свои фотографии, принадлежащие другим лицам.</li>
+      <li><span>▸</span> Размещаемые фотографии должны принадлежать пользователю либо использоваться с разрешения правообладателя.</li>
+      <li><span>▸</span> В случае выявления чужих фотографий администрация сайта вправе удалить такие материалы без предварительного уведомления.</li>
+      <li><span>▸</span> Пользователь несёт полную ответственность за достоверность и законность размещаемых изображений.</li>
+      <li><span>▸</span> Пользователям запрещается выдавать сайт, его материалы, функционал или содержимое за собственный проект либо заявлять права на сайт без соответствующего разрешения правообладателя.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- TELEGRAM CONTACT -->
+<div class="tg-contact-wrap">
+  <a href="https://t.me/ASDORS" target="_blank" class="tg-contact-link">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="#229ED9" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 13.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/>
+    </svg>
+    Связаться с менеджером — @ASDORS
+  </a>
+</div>
+
+<!-- APPLY CTA BUTTON -->
+<div class="apply-cta-wrap">
+  <button type="button" class="apply-cta-btn" id="scrollToFormBtn">
+    🥊 Подать заявку
+  </button>
+</div>
+
+<!-- APPLICATION FORM -->
+<section id="apply-form">
+  <div class="form-box">
+    <h2 class="form-title">Анкета <em>бойца</em></h2>
+    <p class="form-sub">Заполните форму — мы рассмотрим вашу кандидатуру и свяжемся с вами.</p>
+
+    <form id="fighterForm" novalidate>
+      <div class="form-group">
+        <label for="fio">ФИО</label>
+        <input type="text" id="fio" name="fio" placeholder="Иванов Иван Иванович" required>
+      </div>
+
+      <div class="form-group">
+        <label for="age">Возраст</label>
+        <input type="number" id="age" name="age" placeholder="18" min="1" max="120">
+      </div>
+
+      <div class="form-group">
+        <label for="description">Характеристика &amp; Описание</label>
+        <textarea id="description" name="description" placeholder="Спортивный опыт, достижения, весовая категория, стиль..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="photo">Фотография</label>
+        <div class="file-drop" id="fileDropZone">
+          <span class="fname" id="fileName">Файл не выбран</span>
+          <span class="browse-btn">Выбрать файл</span>
+        </div>
+        <input type="file" id="photo" name="photo" accept="image/*">
+        <div id="photoPreview"><img id="photoPreviewImg" src="" alt="Предпросмотр фото"></div>
+      </div>
+
+      <button type="submit" class="form-submit-btn" id="submitBtn">Отправить анкету</button>
+      <div class="form-status" id="formStatus"></div>
+    </form>
+  </div>
+</section>
+
+<footer>© 2026 Promising Russian Fighters — Все права защищены</footer>
+
+<script>
+// ===== Поиск бойцов =====
+document.getElementById('searchInput').addEventListener('input', function() {
+  var q = this.value.toLowerCase().trim();
+  var cards = document.querySelectorAll('.fighter-card');
+  var visible = 0;
+  cards.forEach(function(card) {
+    var name = card.getAttribute('data-name');
+    var sport = card.getAttribute('data-sport');
+    var match = !q || name.includes(q) || sport.includes(q);
+    card.style.display = match ? '' : 'none';
+    if (match) visible++;
+  });
+  document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+});
+
+// ===== Плавная прокрутка к форме =====
+document.getElementById('scrollToFormBtn').addEventListener('click', function() {
+  document.getElementById('apply-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+// ===== Превью файла и клик по зоне загрузки =====
+var fileDropZone = document.getElementById('fileDropZone');
+var photoInput = document.getElementById('photo');
+var fileNameLabel = document.getElementById('fileName');
+var photoPreview = document.getElementById('photoPreview');
+var photoPreviewImg = document.getElementById('photoPreviewImg');
+
+fileDropZone.addEventListener('click', function() {
+  photoInput.click();
+});
+
+photoInput.addEventListener('change', function() {
+  var file = photoInput.files[0];
+  if (file) {
+    fileNameLabel.textContent = file.name;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      photoPreviewImg.src = e.target.result;
+      photoPreview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  } else {
+    fileNameLabel.textContent = 'Файл не выбран';
+    photoPreview.style.display = 'none';
+    photoPreviewImg.src = '';
+  }
+});
+
+// ===== Отправка анкеты в Telegram =====
+var TELEGRAM_BOT_TOKEN = '8887645573:AAFXz4vGwd16911s6vfpHb1UUDYBQPXIb8E';
+var TELEGRAM_CHAT_ID = '7800810111';
+
+var fighterForm = document.getElementById('fighterForm');
+var submitBtn = document.getElementById('submitBtn');
+var formStatus = document.getElementById('formStatus');
+
+fighterForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+  formStatus.className = 'form-status';
+  formStatus.style.display = 'none';
+
+  var fio = document.getElementById('fio').value.trim();
+  var age = document.getElementById('age').value.trim();
+  var description = document.getElementById('description').value.trim();
+  var file = photoInput.files[0];
+
+  if (!fio) {
+    formStatus.textContent = 'Пожалуйста, укажите ФИО.';
+    formStatus.classList.add('error');
+    formStatus.style.display = 'block';
+    document.getElementById('fio').focus();
+    return;
+  }
+
+  var caption =
+    '🥊 Новая анкета бойца!\n' +
+    '👤 ФИО: ' + fio + '\n' +
+    '🎂 Возраст: ' + (age || 'не указан') + '\n' +
+    '📝 Характеристика: ' + (description || 'не указана');
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Отправка...';
+
+  var request;
+
+  if (file) {
+    var photoData = new FormData();
+    photoData.append('chat_id', TELEGRAM_CHAT_ID);
+    photoData.append('photo', file);
+    photoData.append('caption', caption);
+
+    request = fetch('https://api.telegram.org/bot' + TELEGRAM_BOT_TOKEN + '/sendPhoto', {
+      method: 'POST',
+      body: photoData
+    });
+  } else {
+    var msgData = new FormData();
+    msgData.append('chat_id', TELEGRAM_CHAT_ID);
+    msgData.append('text', caption);
+
+    request = fetch('https://api.telegram.org/bot' + TELEGRAM_BOT_TOKEN + '/sendMessage', {
+      method: 'POST',
+      body: msgData
+    });
+  }
+
+  request
+    .then(function(response) {
+      return response.json().then(function(data) {
+        if (!response.ok || !data.ok) {
+          throw new Error(data.description || 'Ошибка отправки в Telegram');
+        }
+        return data;
+      });
+    })
+    .then(function() {
+      formStatus.textContent = file
+        ? 'Анкета и фото успешно отправлены!'
+        : 'Анкета успешно отправлена!';
+      formStatus.classList.add('success');
+      formStatus.style.display = 'block';
+
+      fighterForm.reset();
+      fileNameLabel.textContent = 'Файл не выбран';
+      photoPreview.style.display = 'none';
+      photoPreviewImg.src = '';
+    })
+    .catch(function(err) {
+      formStatus.textContent = 'Не удалось отправить анкету: ' + err.message;
+      formStatus.classList.add('error');
+      formStatus.style.display = 'block';
+    })
+    .finally(function() {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Отправить анкету';
+    });
+});
+</script>
+</body>
+</html>
