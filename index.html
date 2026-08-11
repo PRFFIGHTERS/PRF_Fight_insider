@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>База Бойцов</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --red: #FF2A2A;
+      --red-glow: rgba(255, 42, 42, 0.35);
+      --grey: #A0A0A0;
+      --dark: #0A0A0A;
+      --card-bg: #141414;
+    }
+    
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background: var(--dark); 
+      color: #fff; 
+      min-height: 100vh; 
+      padding-bottom: 120px; 
+    }
+    
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,10,10,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,42,42,0.3);
+      padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 68px;
+    }
+    .logo-text { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: clamp(14px,2.5vw,18px); letter-spacing: 0.07em; text-transform: uppercase; }
+    .logo-text span { color: var(--red); text-shadow: 0 0 10px var(--red-glow); }
+    
+    nav { display: flex; gap: 28px; }
+    nav a { font-family: 'Oswald', sans-serif; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--grey); text-decoration: none; transition: color 0.2s; }
+    nav a:hover { color: #fff; }
+
+    .hero { position: relative; padding: 50px 24px 30px; text-align: center; overflow: hidden; }
+    .hero::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(255,42,42,0.2) 0%, transparent 70%); pointer-events:none; }
+    .hero-eyebrow { font-family:'Oswald',sans-serif; font-size:11px; letter-spacing:0.25em; text-transform:uppercase; color:var(--red); margin-bottom:12px; }
+    .hero-title { font-family:'Oswald',sans-serif; font-weight:700; font-size:clamp(32px,6vw,64px); text-transform:uppercase; letter-spacing:0.04em; line-height:0.95; margin-bottom:16px; }
+    .hero-title em { font-style:normal; color:var(--red); text-shadow: 0 0 15px var(--red-glow); }
+    .hero-sub { font-size:14px; color:var(--grey); max-width:480px; margin:0 auto 28px; line-height:1.6; font-weight:300; }
+
+    .search-wrap { max-width:480px; margin:0 auto; position:relative; }
+    .search-wrap input {
+      width:100%; padding:14px 20px 14px 50px;
+      background:rgba(255,255,255,0.04); border:1.5px solid rgba(255,255,255,0.1);
+      border-radius:12px; color:#fff; font-family:'Inter',sans-serif; font-size:15px; outline:none;
+      transition: all 0.25s ease;
+    }
+    .search-wrap input::placeholder { color:rgba(255,255,255,0.3); }
+    .search-wrap input:focus { border-color:var(--red); background:rgba(255,42,42,0.05); box-shadow: 0 0 15px var(--red-glow); }
+    .search-icon { position:absolute; left:16px; top:50%; transform:translateY(-50%); color:var(--grey); pointer-events:none; }
+
+    .section-label { display:flex; align-items:center; gap:14px; max-width:1100px; margin:40px auto 24px; padding:0 24px; }
+    .section-label span { font-family:'Oswald',sans-serif; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--grey); }
+    .section-label::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.08); }
+
+    .fighters-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:24px; max-width:1100px; margin:0 auto; padding:0 24px 60px; }
+
+    .fighter-card {
+      background:var(--card-bg); border-radius:12px; overflow:hidden;
+      border:1px solid rgba(255,255,255,0.08);
+      transition:transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+    }
+    .fighter-card:hover { transform:translateY(-6px); box-shadow:0 20px 40px rgba(0,0,0,0.6), 0 0 20px var(--red-glow); border-color:var(--red); }
+
+    .card-photo { position:relative; width:100%; aspect-ratio:3/4; overflow:hidden; background:#111; }
+    .card-photo img { width:100%; height:100%; object-fit:cover; object-position:top center; transition:transform 0.5s; display:block; }
+    .fighter-card:hover .card-photo img { transform:scale(1.04); }
+    .card-photo-overlay { position:absolute; bottom:0; left:0; right:0; height:50%; background:linear-gradient(to top, var(--card-bg) 0%, transparent 100%); }
+    .card-sport-tag { position:absolute; top:14px; right:14px; background:var(--red); color:#fff; font-family:'Oswald',sans-serif; font-size:10px; letter-spacing:0.18em; text-transform:uppercase; padding:5px 12px; border-radius:4px; z-index:2; font-weight:600; box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+
+    .card-body { padding:20px 20px 24px; }
+    .card-name { font-family:'Oswald',sans-serif; font-weight:700; font-size:24px; letter-spacing:0.03em; text-transform:uppercase; line-height:1.05; margin-bottom:14px; }
+    .card-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:18px; }
+    .stat-block { background:rgba(255,255,255,0.03); border-radius:8px; padding:10px 8px; text-align:center; border:1px solid rgba(255,255,255,0.05); }
+    .stat-value { font-family:'Oswald',sans-serif; font-size:17px; font-weight:600; color:var(--red); line-height:1; }
+    .stat-label { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--grey); margin-top:4px; }
+    .card-divider { height:1px; background:rgba(255,255,255,0.07); margin:16px 0; }
+    .card-desc { font-size:13px; line-height:1.6; color:rgba(255,255,255,0.65); font-weight:300; }
+
+    .card-insta {
+      display:inline-flex; align-items:center; gap:8px; margin-top:16px;
+      background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);
+      border-radius:8px; padding:10px 16px; text-decoration:none;
+      font-family:'Inter',sans-serif; font-size:13px; font-weight:600; color:#fff;
+      transition:opacity 0.2s;
+    }
+    .card-insta:hover { opacity:0.88; }
+
+    .no-results { text-align:center; padding:60px 24px; color:var(--grey); font-family:'Oswald',sans-serif; font-size:18px; letter-spacing:0.1em; text-transform:uppercase; display:none; grid-column:1/-1; }
+
+    .content-section { max-width:900px; margin:40px auto 0; padding:0 24px; }
+    .content-title { font-family:'Oswald',sans-serif; font-weight:700; font-size:clamp(28px,5vw,48px); text-transform:uppercase; letter-spacing:0.04em; line-height:1; margin-bottom:24px; }
+    .content-title em { font-style:normal; color:var(--red); }
+
+    .rules-box { background:var(--card-bg); border:1px solid rgba(255,42,42,0.3); border-left:4px solid var(--red); border-radius:12px; padding:24px; }
+    .rules-box h3 { font-family:'Oswald',sans-serif; font-size:15px; letter-spacing:0.15em; text-transform:uppercase; color:var(--red); margin-bottom:16px; }
+    .rules-box ul { list-style:none; display:grid; gap:12px; }
+    .rules-box li { display:flex; gap:12px; font-size:13.5px; line-height:1.6; color:rgba(255,255,255,0.65); font-weight:300; }
+    .rules-box li span { color:var(--red); flex-shrink:0; }
+
+    .tg-contact-wrap { text-align:center; padding: 28px 24px 8px; }
+    .tg-contact-link {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--card-bg); border: 1.5px solid #229ED9;
+      border-radius: 10px; padding: 12px 24px;
+      font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
+      color: #fff; text-decoration: none; transition: all 0.2s ease;
+    }
+    .tg-contact-link:hover { background:#1e2e38; box-shadow:0 0 15px rgba(34,158,217,0.4); }
+
+    /* ПЛАВАЮЩАЯ КНОПКА ОТКРЫТИЯ АНКЕТЫ */
+    .floating-apply-btn {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      z-index: 1000; background: var(--red); color: #fff; border: none; cursor: pointer;
+      font-family: 'Oswald', sans-serif; font-size: 15px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 16px 36px; border-radius: 50px;
+      box-shadow: 0 10px 30px var(--red-glow), 0 0 0 2px rgba(255,255,255,0.15);
+      transition: all 0.25s ease; max-width: 90vw; white-space: nowrap;
+    }
+    .floating-apply-btn:hover {
+      transform: translateX(-50%) translateY(-3px);
+      box-shadow: 0 15px 35px rgba(255,42,42,0.6), 0 0 0 2px rgba(255,255,255,0.3);
+      background: #ff1111;
+    }
+
+    /* МОДАЛЬНОЕ ОКНО С АНКЕТОЙ */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.82); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      z-index: 2000; display: none; align-items: center; justify-content: center;
+      padding: 16px; overflow-y: auto;
+    }
+    .modal-overlay.active { display: flex; }
+
+    .modal-container { position: relative; width: 100%; max-width: 480px; margin: auto; }
+    
+    .modal-close-btn {
+      position: absolute; top: 20px; right: 20px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      width: 36px; height: 36px; border-radius: 50%; color: #aaa; font-size: 20px;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      transition: all 0.2s ease; z-index: 10;
+    }
+    .modal-close-btn:hover { color: #fff; background: rgba(255,255,255,0.15); }
+
+    .form-box {
+      background: rgba(22, 22, 24, 0.95);
+      border: 1px solid rgba(255, 42, 42, 0.25);
+      border-radius: 20px;
+      padding: 32px 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 42, 42, 0.1);
+    }
+    .form-title { font-family:'Oswald',sans-serif; font-weight:700; font-size:26px; text-transform:uppercase; letter-spacing:0.03em; margin-bottom:6px; }
+    .form-title em { font-style:normal; color:var(--red); text-shadow: 0 0 10px var(--red-glow); }
+    .form-sub { font-size:13px; color:var(--grey); font-weight:300; margin-bottom:24px; line-height:1.5; }
+
+    .form-group { margin-bottom:18px; }
+    .form-group label {
+      display:block; font-family:'Oswald',sans-serif; font-size:11px;
+      letter-spacing:0.14em; text-transform:uppercase; color:#ccc; margin-bottom:6px;
+    }
+    .form-group label span { color: var(--red); }
+    
+    .form-group input[type="text"],
+    .form-group input[type="number"],
+    .form-group textarea {
+      width:100%; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1);
+      border-radius:10px; padding:12px 16px; color:#fff; font-family:'Inter',sans-serif;
+      font-size:14px; outline:none; transition: all 0.25s ease;
+    }
+    .form-group input[type="text"]:focus,
+    .form-group input[type="number"]:focus,
+    .form-group textarea:focus {
+      border-color:var(--red); background:rgba(255,42,42,0.03);
+      box-shadow: 0 0 12px var(--red-glow);
+    }
+    .form-group textarea { resize:vertical; min-height:85px; line-height:1.5; }
+
+    /* БЛОК ЗАГРУЗКИ ФАЙЛА С КНОПКОЙ УДАЛЕНИЯ */
+    .file-upload-card {
+      position: relative;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1.5px dashed rgba(255, 42, 42, 0.4);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      display: block;
+      transition: all 0.25s ease;
+    }
+    .file-upload-card:hover {
+      border-color: var(--red);
+      background: rgba(255, 42, 42, 0.04);
+      box-shadow: 0 0 15px var(--red-glow);
+    }
+    .file-upload-icon { font-size: 24px; margin-bottom: 4px; display: block; }
+    .file-upload-text { font-family: 'Oswald', sans-serif; font-size: 13px; text-transform: uppercase; color: #fff; letter-spacing: 0.08em; }
+    .file-upload-sub { font-size: 11px; color: var(--grey); margin-top: 2px; }
+    .file-upload-card input[type="file"] { display: none; }
+
+    .file-info-badge {
+      display: none; align-items: center; justify-content: space-between;
+      background: rgba(255, 42, 42, 0.1); border: 1px solid var(--red);
+      border-radius: 8px; padding: 10px 14px; margin-top: 10px; font-size: 13px; color: #fff;
+    }
+    .file-info-badge span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 75%; }
+
+    .file-remove-btn {
+      background: rgba(255, 42, 42, 0.2);
+      border: 1px solid var(--red);
+      color: #fff;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .file-remove-btn:hover { background: var(--red); }
+
+    #photoPreview { margin-top: 12px; display: none; text-align: center; }
+    #photoPreview img { max-width: 100%; max-height: 140px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15); object-fit: cover; }
+
+    .form-submit-btn {
+      width:100%; background:var(--red); color:#fff; border:none; cursor:pointer;
+      font-family:'Oswald',sans-serif; font-size:15px; font-weight:700;
+      letter-spacing:0.12em; text-transform:uppercase;
+      padding:15px; border-radius:10px; margin-top:10px;
+      box-shadow: 0 8px 20px var(--red-glow);
+      transition: all 0.25s ease;
+    }
+    .form-submit-btn:hover:not(:disabled) { background:#ff1111; transform: translateY(-1px); box-shadow: 0 12px 25px rgba(255,42,42,0.5); }
+    .form-status { margin-top:14px; font-size:13px; text-align:center; line-height:1.5; display:none; }
+    .form-status.success { display:block; color:#4EFE80; }
+    .form-status.error { display:block; color:#FF5555; }
+
+    footer { border-top:1px solid rgba(255,255,255,0.07); padding:24px; text-align:center; font-size:12px; color:rgba(255,255,255,0.2); letter-spacing:0.08em; margin-top:60px; }
+
+    @media (max-width:600px) {
+      header { padding:0 16px; }
+      nav { display:none; }
+      .hero { padding:36px 16px 28px; }
+      .fighters-grid { grid-template-columns:1fr; padding:0 16px 40px; gap:20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-text">База <span>Бойцов</span></div>
+    <nav>
+      <a href="#fighters">Бойцы</a>
+      <a href="#rules">Правила</a>
+      <a href="#contacts">Контакты</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="hero-eyebrow">Официальный реестр</div>
+    <h1 class="hero-title">База <em>Бойцов</em></h1>
+    <p class="hero-sub">Профили, статистика и достижения спортсменов</p>
+
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Поиск по имени или виду спорта...">
+    </div>
+  </main>
+
+  <div class="section-label" id="fighters">
+    <span>Спортсмены</span>
+  </div>
+
+  <div class="fighters-grid" id="fightersGrid">
+    
+    <!-- Карточка 1 -->
+    <div class="fighter-card" data-search="бокс мма сидоров алексей">
+      <div class="card-photo">
+        <img src="https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=600&auto=format&fit=crop&q=80" alt="Боец">
+        <div class="card-photo-overlay"></div>
+        <span class="card-sport-tag">Бокс / ММА</span>
+      </div>
+      <div class="card-body">
+        <h2 class="card-name">Алексей Сидоров</h2>
+        <div class="card-stats">
+          <div class="stat-block"><div class="stat-value">24</div><div class="stat-label">Возраст</div></div>
+          <div class="stat-block"><div class="stat-value">77 кг</div><div class="stat-label">Вес</div></div>
+          <div class="stat-block"><div class="stat-value">12-2</div><div class="stat-label">Рекорд</div></div>
+        </div>
+        <div class="card-divider"></div>
+        <p class="card-desc">Мастер спорта по боксу, призер региональных турниров по ММА.</p>
+        <a href="#" class="card-insta" target="_blank">Instagram</a>
+      </div>
+    </div>
+
+    <!-- Карточка 2 -->
+    <div class="fighter-card" data-search="кикбоксинг петров дмитрий">
+      <div class="card-photo">
+        <img src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&auto=format&fit=crop&q=80" alt="Боец">
+        <div class="card-photo-overlay"></div>
+        <span class="card-sport-tag">Кикбоксинг</span>
+      </div>
+      <div class="card-body">
+        <h2 class="card-name">Дмитрий Петров</h2>
+        <div class="card-stats">
+          <div class="stat-block"><div class="stat-value">21</div><div class="stat-label">Возраст</div></div>
+          <div class="stat-block"><div class="stat-value">70 кг</div><div class="stat-label">Вес</div></div>
+          <div class="stat-block"><div class="stat-value">8-1</div><div class="stat-label">Рекорд</div></div>
+        </div>
+        <div class="card-divider"></div>
+        <p class="card-desc">КМС по кикбоксингу, яркий ударный стиль, чемпион области.</p>
+        <a href="#" class="card-insta" target="_blank">Instagram</a>
+      </div>
+    </div>
+
+    <div class="no-results" id="noResults">Бойцы не найдены</div>
+  </div>
+
+  <div class="content-section" id="rules">
+    <div class="content-title">Правила <em>подачи</em></div>
+    <div class="rules-box">
+      <h3>Требования к анкете</h3>
+      <ul>
+        <li><span>1.</span> Указывайте достоверные личные данные и реальный спортивный рекорд.</li>
+        <li><span>2.</span> Загружайте качественное фото в спортивной форме.</li>
+        <li><span>3.</span> Подробно опишите ваш спортивный бэкграунд и достижения.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tg-contact-wrap" id="contacts">
+    <a href="https://t.me/" class="tg-contact-link" target="_blank">
+      <span>💬 Написать в Telegram</span>
+    </a>
+  </div>
+
+  <!-- Плавающая кнопка для вызова анкеты -->
+  <button class="floating-apply-btn" id="openModalBtn">Заполнить анкету</button>
+
+  <!-- Модальное окно с анкетой -->
+  <div class="modal-overlay" id="formModal">
+    <div class="modal-container">
+      <div class="form-box">
+        <button type="button" class="modal-close-btn" id="closeModalBtn">&times;</button>
+        <h2 class="form-title">Анкета <em>бойца</em></h2>
+        <p class="form-sub">Заполните все поля — мы рассмотрим вашу кандидатуру и свяжемся с вами.</p>
+
+        <form id="fighterForm" novalidate>
+          <div class="form-group">
+            <label for="fio">ФИО <span>*</span></label>
+            <input type="text" id="fio" name="fio" placeholder="Иванов Иван Иванович" required>
+          </div>
+
+          <div class="form-group">
+            <label for="age">Возраст <span>*</span></label>
+            <input type="number" id="age" name="age" placeholder="18" min="1" max="120" required>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Характеристика и Описание <span>*</span></label>
+            <textarea id="description" name="description" placeholder="Спортивный опыт, достижения, весовая категория, стиль..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Фотография <span>*</span></label>
+            <label for="photo" class="file-upload-card" id="fileDropZone">
+              <span class="file-upload-icon">📸</span>
+              <span class="file-upload-text">Загрузить фото</span>
+              <span class="file-upload-sub">Нажмите для выбора файла</span>
+              <input type="file" id="photo" name="photo" accept="image/*" required>
+            </label>
+
+            <div class="file-info-badge" id="fileBadge">
+              <span id="fileName">Файл не выбран</span>
+              <button type="button" class="file-remove-btn" id="removeFileBtn">Удалить ✕</button>
+            </div>
+
+            <div id="photoPreview">
+              <img id="photoPreviewImg" src="" alt="Предпросмотр">
+            </div>
+          </div>
+
+          <button type="submit" class="form-submit-btn" id="submitBtn">Отправить анкету</button>
+          <div class="form-status" id="formStatus"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2026 База Бойцов. Все права защищены.
+  </footer>
+
+  <script>
+    // Поиск по карточкам
+    var searchInput = document.getElementById('searchInput');
+    var fighterCards = document.querySelectorAll('.fighter-card');
+    var noResults = document.getElementById('noResults');
+
+    if (searchInput) {
+      searchInput.addEventListener('input', function() {
+        var query = this.value.toLowerCase().trim();
+        var visibleCount = 0;
+
+        fighterCards.forEach(function(card) {
+          var searchData = card.getAttribute('data-search') || '';
+          if (searchData.toLowerCase().includes(query)) {
+            card.style.display = 'block';
+            visibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        if (noResults) {
+          noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+      });
+    }
+
+    // Управление модальным окном
+    var openModalBtn = document.getElementById('openModalBtn');
+    var closeModalBtn = document.getElementById('closeModalBtn');
+    var formModal = document.getElementById('formModal');
+
+    if (openModalBtn && formModal) {
+      openModalBtn.addEventListener('click', function() {
+        formModal.classList.add('active');
+      });
+    }
+
+    if (closeModalBtn && formModal) {
+      closeModalBtn.addEventListener('click', function() {
+        formModal.classList.remove('active');
+      });
+    }
+
+    window.addEventListener('click', function(e) {
+      if (e.target === formModal) {
+        formModal.classList.remove('active');
+      }
+    });
+
+    // Работа с файлом
+    var photoInput = document.getElementById('photo');
+    var fileNameLabel = document.getElementById('fileName');
+    var fileBadge = document.getElementById('fileBadge');
+    var photoPreview = document.getElementById('photoPreview');
+    var photoPreviewImg = document.getElementById('photoPreviewImg');
+    var removeFileBtn = document.getElementById('removeFileBtn');
+
+    if (photoInput) {
+      photoInput.addEventListener('change', function() {
+        var file = photoInput.files[0];
+        if (file) {
+          if (fileNameLabel) fileNameLabel.textContent = '📎 ' + file.name;
+          if (fileBadge) fileBadge.style.display = 'flex';
+          
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            if (photoPreviewImg) photoPreviewImg.src = e.target.result;
+            if (photoPreview) photoPreview.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        } else {
+          resetFileInput();
+        }
+      });
+    }
+
+    if (removeFileBtn) {
+      removeFileBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        resetFileInput();
+      });
+    }
+
+    function resetFileInput() {
+      if (photoInput) photoInput.value = '';
+      if (fileNameLabel) fileNameLabel.textContent = 'Файл не выбран';
+      if (fileBadge) fileBadge.style.display = 'none';
+      if (photoPreview) photoPreview.style.display = 'none';
+      if (photoPreviewImg) photoPreviewImg.src = '';
+    }
+  </script>
+</body>
+</html>
