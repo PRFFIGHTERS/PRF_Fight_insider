@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAKSIM — поиск</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #f4f5f7;
+    --bg-grad-1: #f4f5f7;
+    --bg-grad-2: #e9ebef;
+    --text: #1c1c1e;
+    --muted: #6b6f76;
+    --card-bg: #ffffff;
+    --card-border: rgba(0,0,0,0.08);
+    --shadow: 0 10px 30px rgba(0,0,0,0.08);
+    --accent: #ff8a3d;
+    --input-bg: #ffffff;
+    --input-border: rgba(0,0,0,0.12);
+    --tile-bg: #ffffff;
+    --tile-hover: #f0f1f4;
+    --logo-grad: linear-gradient(90deg, #444 0%, #ff8a3d 100%);
+    transition: background .35s ease, color .35s ease;
+  }
+
+  [data-theme="dark"]{
+    --bg: #0e0f12;
+    --bg-grad-1: #101114;
+    --bg-grad-2: #17181c;
+    --text: #f2f2f2;
+    --muted: #9a9ca3;
+    --card-bg: #1a1b1f;
+    --card-border: rgba(255,255,255,0.08);
+    --shadow: 0 10px 30px rgba(0,0,0,0.45);
+    --accent: #ff8a3d;
+    --input-bg: #1a1b1f;
+    --input-border: rgba(255,255,255,0.12);
+    --tile-bg: #18191d;
+    --tile-hover: #222329;
+    --logo-grad: linear-gradient(90deg, #ffffff 0%, #ff8a3d 100%);
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin:0;
+    padding:0;
+    height:100%;
+  }
+
+  body{
+    font-family: 'Poppins', 'Inter', sans-serif;
+    background: radial-gradient(circle at top, var(--bg-grad-2), var(--bg-grad-1));
+    color: var(--text);
+    min-height: 100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding: 24px 16px 60px;
+    transition: background .35s ease;
+  }
+
+  /* Theme toggle */
+  .theme-toggle{
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 8px 14px;
+    border-radius: 999px;
+    box-shadow: var(--shadow);
+    cursor:pointer;
+    font-size: 14px;
+    color: var(--text);
+    user-select:none;
+    z-index: 50;
+  }
+  .theme-toggle:hover{ opacity:0.85; }
+  .theme-toggle .icon{ font-size:16px; }
+
+  /* Logo */
+  .logo-wrap{
+    margin-top: 10vh;
+    margin-bottom: 34px;
+    text-align:center;
+  }
+  .logo{
+    font-size: clamp(48px, 10vw, 84px);
+    font-weight: 800;
+    letter-spacing: 2px;
+    background: var(--logo-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+  }
+  .tagline{
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+
+  /* Search */
+  .search-form{
+    width: 100%;
+    max-width: 620px;
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 999px;
+    padding: 8px 8px 8px 20px;
+    box-shadow: var(--shadow);
+  }
+  .search-form:focus-within{
+    border-color: var(--accent);
+  }
+  .search-icon{
+    width: 20px;
+    height: 20px;
+    flex-shrink:0;
+    color: var(--muted);
+  }
+  .search-input{
+    flex:1;
+    border:none;
+    outline:none;
+    background:transparent;
+    font-size: 16px;
+    color: var(--text);
+    font-family: inherit;
+    padding: 10px 0;
+    min-width: 0;
+  }
+  .search-input::placeholder{ color: var(--muted); }
+
+  .search-btn{
+    border:none;
+    outline:none;
+    cursor:pointer;
+    background: linear-gradient(90deg, #ff8a3d, #ff6a00);
+    color:white;
+    font-weight:600;
+    font-size:14px;
+    padding: 12px 22px;
+    border-radius: 999px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    transition: transform .15s ease, box-shadow .15s ease;
+    white-space:nowrap;
+  }
+  .search-btn:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(255,106,0,0.35);
+  }
+  .search-btn:active{ transform: translateY(0); }
+
+  /* Quick links */
+  .quick-links{
+    margin-top: 44px;
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(76px, 1fr));
+    gap: 14px;
+    width: 100%;
+    max-width: 620px;
+  }
+
+  .tile{
+    background: var(--tile-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 14px 8px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap: 8px;
+    text-decoration:none;
+    color: var(--text);
+    position: relative;
+    transition: background .2s ease, transform .15s ease;
+    min-height: 90px;
+  }
+  .tile:hover{
+    background: var(--tile-hover);
+    transform: translateY(-2px);
+  }
+  .tile-icon{
+    width: 30px;
+    height: 30px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius: 8px;
+    overflow:hidden;
+  }
+  .tile-icon img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+  }
+  .tile-label{
+    font-size: 12px;
+    color: var(--muted);
+    text-align:center;
+    max-width: 100%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    width: 100%;
+  }
+  .tile-remove{
+    position:absolute;
+    top: 4px;
+    right: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    background:none;
+    border:none;
+    cursor:pointer;
+    opacity: 0;
+    transition: opacity .15s ease;
+    line-height: 1;
+    padding: 2px;
+  }
+  .tile:hover .tile-remove{ opacity: 1; }
+
+  .tile.add-tile{
+    border-style: dashed;
+    color: var(--muted);
+    cursor:pointer;
+  }
+  .tile.add-tile .tile-icon{
+    font-size: 22px;
+    color: var(--accent);
+    background: transparent;
+  }
+
+  /* Modal */
+  .overlay{
+    position: fixed;
+    inset:0;
+    background: rgba(0,0,0,0.45);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index: 100;
+    padding: 20px;
+  }
+  .overlay.open{ display:flex; }
+  .modal{
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 24px;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: var(--shadow);
+  }
+  .modal h3{
+    margin: 0 0 16px;
+    font-size: 18px;
+  }
+  .modal label{
+    display:block;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    margin-top: 12px;
+  }
+  .modal input{
+    width:100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    outline:none;
+  }
+  .modal input:focus{ border-color: var(--accent); }
+  .modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .modal-actions button{
+    border:none;
+    padding: 10px 18px;
+    border-radius: 999px;
+    cursor:pointer;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+  }
+  .btn-cancel{
+    background: transparent;
+    color: var(--muted);
+  }
+  .btn-save{
+    background: linear-gradient(90deg, #ff8a3d, #ff6a00);
+    color: white;
+  }
+
+  footer{
+    margin-top: auto;
+    padding-top: 40px;
+    font-size: 12px;
+    color: var(--muted);
+    text-align:center;
+  }
+
+  @media (max-width: 480px){
+    .logo-wrap{ margin-top: 14vh; }
+    .search-btn span{ display:none; }
+    .search-btn{ padding: 12px 16px; }
+  }
+</style>
+</head>
+<body data-theme="light">
+
+  <div class="theme-toggle" id="themeToggle">
+    <span class="icon" id="themeIcon">🌙</span>
+    <span id="themeLabel">Тёмная</span>
+  </div>
+
+  <div class="logo-wrap">
+    <div class="logo">MOROF</div>
+    <div class="tagline">твоя стартовая страница</div>
+  </div>
+
+  <form class="search-form" id="searchForm">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+      <path d="M20 20L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <input type="text" class="search-input" id="searchInput" placeholder="Искать в Google..." autofocus autocomplete="off">
+    <button type="submit" class="search-btn">
+      <span>Найти</span>
+    </button>
+  </form>
+
+  <div class="quick-links" id="quickLinks"></div>
+
+  <footer>MOROF — простой и быстрый старт в интернет</footer>
+
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <h3>Добавить ссылку</h3>
+      <label for="linkName">Название</label>
+      <input type="text" id="linkName" placeholder="Например, Reddit">
+      <label for="linkUrl">Адрес сайта</label>
+      <input type="text" id="linkUrl" placeholder="https://example.com">
+      <div class="modal-actions">
+        <button class="btn-cancel" id="cancelBtn">Отмена</button>
+        <button class="btn-save" id="saveBtn">Добавить</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Storage helper (falls back to in-memory if localStorage unavailable) ----------
+  var memoryStore = {};
+  var storage = {
+    get: function(key){
+      try{
+        var v = window.localStorage.getItem(key);
+        return v !== null ? v : (key in memoryStore ? memoryStore[key] : null);
+      }catch(e){
+        return key in memoryStore ? memoryStore[key] : null;
+      }
+    },
+    set: function(key, value){
+      memoryStore[key] = value;
+      try{ window.localStorage.setItem(key, value); }catch(e){ /* ignore */ }
+    }
+  };
+
+  // ---------- Theme ----------
+  var body = document.body;
+  var themeToggle = document.getElementById('themeToggle');
+  var themeIcon = document.getElementById('themeIcon');
+  var themeLabel = document.getElementById('themeLabel');
+
+  function applyTheme(theme){
+    body.setAttribute('data-theme', theme);
+    if(theme === 'dark'){
+      themeIcon.textContent = '☀️';
+      themeLabel.textContent = 'Светлая';
+    } else {
+      themeIcon.textContent = '🌙';
+      themeLabel.textContent = 'Тёмная';
+    }
+    storage.set('morof_theme', theme);
+  }
+
+  var savedTheme = storage.get('morof_theme');
+  if(!savedTheme){
+    savedTheme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  }
+  applyTheme(savedTheme);
+
+  themeToggle.addEventListener('click', function(){
+    var current = body.getAttribute('data-theme');
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+  });
+
+  // ---------- Search ----------
+  var searchForm = document.getElementById('searchForm');
+  var searchInput = document.getElementById('searchInput');
+
+  searchForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    var q = searchInput.value.trim();
+    if(!q) return;
+    window.location.href = 'https://www.google.com/search?q=' + encodeURIComponent(q);
+  });
+
+  // ---------- Quick links ----------
+  var defaultLinks = [
+    { name: 'YouTube', url: 'https://www.youtube.com', icon: 'https://www.google.com/s2/favicons?sz=64&domain=youtube.com', removable:false },
+    { name: 'VK', url: 'https://vk.com', icon: 'https://www.google.com/s2/favicons?sz=64&domain=vk.com', removable:false },
+    { name: 'Telegram', url: 'https://web.telegram.org', icon: 'https://www.google.com/s2/favicons?sz=64&domain=telegram.org', removable:false },
+    { name: 'GitHub', url: 'https://github.com', icon: 'https://www.google.com/s2/favicons?sz=64&domain=github.com', removable:false },
+    { name: 'Gmail', url: 'https://mail.google.com', icon: 'https://www.google.com/s2/favicons?sz=64&domain=gmail.com', removable:false },
+    { name: 'Wikipedia', url: 'https://www.wikipedia.org', icon: 'https://www.google.com/s2/favicons?sz=64&domain=wikipedia.org', removable:false }
+  ];
+
+  function loadCustomLinks(){
+    var raw = storage.get('morof_custom_links');
+    if(!raw) return [];
+    try{
+      var parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    }catch(e){
+      return [];
+    }
+  }
+
+  function saveCustomLinks(links){
+    storage.set('morof_custom_links', JSON.stringify(links));
+  }
+
+  var customLinks = loadCustomLinks();
+  var quickLinksEl = document.getElementById('quickLinks');
+
+  function faviconFor(url){
+    try{
+      var host = new URL(url).hostname;
+      return 'https://www.google.com/s2/favicons?sz=64&domain=' + host;
+    }catch(e){
+      return '';
+    }
+  }
+
+  function renderLinks(){
+    quickLinksEl.innerHTML = '';
+
+    var allLinks = defaultLinks.concat(customLinks);
+
+    allLinks.forEach(function(link, idx){
+      var isCustom = idx >= defaultLinks.length;
+      var a = document.createElement('a');
+      a.className = 'tile';
+      a.href = link.url;
+      a.target = '_self';
+
+      var iconWrap = document.createElement('div');
+      iconWrap.className = 'tile-icon';
+      var img = document.createElement('img');
+      img.src = link.icon || faviconFor(link.url);
+      img.alt = link.name;
+      img.onerror = function(){ img.style.display = 'none'; };
+      iconWrap.appendChild(img);
+
+      var label = document.createElement('div');
+      label.className = 'tile-label';
+      label.textContent = link.name;
+
+      a.appendChild(iconWrap);
+      a.appendChild(label);
+
+      if(isCustom){
+        var removeBtn = document.createElement('button');
+        removeBtn.className = 'tile-remove';
+        removeBtn.type = 'button';
+        removeBtn.innerHTML = '✕';
+        removeBtn.addEventListener('click', function(e){
+          e.preventDefault();
+          e.stopPropagation();
+          var customIdx = idx - defaultLinks.length;
+          customLinks.splice(customIdx, 1);
+          saveCustomLinks(customLinks);
+          renderLinks();
+        });
+        a.appendChild(removeBtn);
+      }
+
+      quickLinksEl.appendChild(a);
+    });
+
+    // "Add link" tile
+    var addTile = document.createElement('div');
+    addTile.className = 'tile add-tile';
+    addTile.innerHTML = '<div class="tile-icon">+</div><div class="tile-label">Добавить</div>';
+    addTile.addEventListener('click', openModal);
+    quickLinksEl.appendChild(addTile);
+  }
+
+  // ---------- Modal for adding links ----------
+  var overlay = document.getElementById('overlay');
+  var linkName = document.getElementById('linkName');
+  var linkUrl = document.getElementById('linkUrl');
+  var cancelBtn = document.getElementById('cancelBtn');
+  var saveBtn = document.getElementById('saveBtn');
+
+  function openModal(){
+    linkName.value = '';
+    linkUrl.value = '';
+    overlay.classList.add('open');
+    setTimeout(function(){ linkName.focus(); }, 50);
+  }
+
+  function closeModal(){
+    overlay.classList.remove('open');
+  }
+
+  cancelBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', function(e){
+    if(e.target === overlay) closeModal();
+  });
+
+  function normalizeUrl(url){
+    url = url.trim();
+    if(!/^https?:\/\//i.test(url)){
+      url = 'https://' + url;
+    }
+    return url;
+  }
+
+  saveBtn.addEventListener('click', function(){
+    var name = linkName.value.trim();
+    var url = linkUrl.value.trim();
+    if(!name || !url) return;
+    url = normalizeUrl(url);
+    var newLink = { name: name, url: url, icon: faviconFor(url), removable: true };
+    customLinks.push(newLink);
+    saveCustomLinks(customLinks);
+    renderLinks();
+    closeModal();
+  });
+
+  linkUrl.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ e.preventDefault(); saveBtn.click(); }
+  });
+  linkName.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ e.preventDefault(); linkUrl.focus(); }
+  });
+
+  renderLinks();
+})();
+</script>
+</body>
+</html>
